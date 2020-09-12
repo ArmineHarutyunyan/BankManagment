@@ -96,8 +96,8 @@
 				double d = element["amount"].get<double>();
 				amount += d;
 				element["amount"] = amount;
-			}
-			break;											
+				break;
+			}									
 		 }
 		 start();
 	}
