@@ -4,8 +4,6 @@
 #include <fstream>
 #include "BankManagment.h"
 
-
-
 	
 
 
@@ -41,9 +39,9 @@
 		}	
 	}
 
-	void BankManagment::start()
+	void BankManagment::start() 
 	{
-		std::cout << std::setw(6) << "\nCUSTOMER ACCOUNT BANKING MANAGEMENT SYSTEM\n\n";
+		std::cout << std::setw(6) << "\nCUSTOMER ACCOUNT BANKING MANAGEMENT SYSTEM\n";
 		std::cout << std::setw(8) << "\n WELCOME TO THE MAIN MENU\n\n";
 		std::cout << "1. Create new account\n" << "2. Update information of existing account\n";
 		std::cout << "3. For transactions\n" << "4. Check the details of existing account\n";
@@ -82,23 +80,24 @@
 
 	void BankManagment::updateInformation()
 	{
-		 std::cout << "Enter your account number and passport seriya please\n";
-		 int accountNum{};
-		 std::string passport{};
-		 std::cin >> accountNum >> passport;
-		 for(auto& element : clients)
-		 {
-		 	if(element["accountNumber"].get<int>() == accountNum)
+		std::cout << "Enter your account number and passport seriya please\n";
+		int accountNum{};
+		std::string passport{};
+		std::cin >> accountNum >> passport;
+		double amount;
+		for(auto& element : clients)
+		{
+			if(element["accountNumber"].get<int>() == accountNum)
 			{
 				std::cout << "Enter amount you will add\n";
-				double amount;
 				std::cin >> amount;
 				double d = element["amount"].get<double>();
 				amount += d;
 				element["amount"] = amount;
-			}
-			break;											
+				break;
+			}										
 		 }
+		 std::cout << "\n Now you have " << amount << " on your account\n";
 		 start();
 	}
 
@@ -146,9 +145,9 @@
 		start();
 	}
 
-	bool BankManagment::isValidAccount(const std::string& passport, const int& acNum)
+	bool BankManagment::isValidAccount(const std::string& passport, const int& acNum) const
 	{
-		for(auto& element : clients)
+		for(const auto& element : clients)
 		{
 			if(element["accountNumber"].get<int>() == acNum && element["passport"].get<std::string>() == passport)
 				return true;
@@ -199,7 +198,7 @@
 		start();
 	}
 
-	void BankManagment::viewCustList()
+	void BankManagment::viewCustList() 
 	{
 		std::cout << "\nCustomer's list\n";
 		for(auto& element : clients)
@@ -209,19 +208,25 @@
 		start();
 	}
 
-	void BankManagment::checkDetails()
+	void BankManagment::checkDetails() 
 	{
-		std::cout << "Enter your passport seriya please\n";
+		std::cout << "Enter your account number and passport seriya please\n";
+		int accountNum{};
 		std::string passport{};
-		std::cin >> passport;
-		for(auto& element : clients)
+		std::cin >> accountNum >> passport;
+		if(isValidAccount(passport, accountNum))
 		{
-			if(element["passport"].get<std::string>() == passport)
+			for(auto& element : clients)
 			{
-				std::cout << "You have " << element["amount"] << " on your account\n";
+				if(element["passport"].get<std::string>() == passport)
+				{
+					std::cout << "You have " << element["amount"] << " on your account\n";
+					break;
+				}
 			}
-			break;
 		}
+		else
+			std::cout << "Invalid account\n";
 		start();
 	}
 
