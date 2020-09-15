@@ -5,41 +5,37 @@
 #include "BankManagment.h"
 
 
-
-	
-
-
-	BankManagment::BankManagment()
-		:clients(json::array()), 
-		 accountNum(111)
-	{
-		std::ifstream ifs("Clients.json");
-		if(ifs.is_open())
-		{
-			ifs >> clients;
-			ifs.close();
-		}
-		else
-			std::cout << "Unable to open file\n";
-
-		initializeAccNumber();
+ 	BankManagment::BankManagment()
+            :clients(json::array()),
+            accountNum(111)
+    	{
+        	std::ifstream ifs("Clients.json");
+        	if(ifs.is_open())
+        	{
+            		ifs >> clients;
+            		ifs.close();
+        	}
+        	else
+            		std::cout << "Unable to open file\n";
+        	initializeAccNumber();
 	}
 
 	void BankManagment::initializeAccNumber()
-	{
+    	{
 		if(!clients.empty())
-		{
-			for(const auto& element : clients)
-			{
-				int currentValue = element["accountNumber"].get<int>();
-				if(currentValue > accountNum)
-				{
-					accountNum = currentValue;
-				}
-			}
-			++accountNum;	
-		}	
-	}
+        	{
+            		for(const auto& element : clients)
+            		{
+                		int currentValue = element["accountNumber"].get<int>();
+                		if(currentValue > accountNum)
+                		{   
+                    			accountNum = currentValue;
+                		}
+            		}
+            		++accountNum;
+        	}
+    	}
+
 
 	void BankManagment::start()
 	{
@@ -75,60 +71,82 @@
 				exit();
 				break;
 			default:
-				std::cout << "Enter correct number please\n";
-				
+				std::cout << "Enter correct number please\n";				
 		}
 	}
 
 	void BankManagment::updateInformation()
-	{
-		 std::cout << "Enter your account number and passport seriya please\n";
-		 int accountNum{};
-		 std::string passport{};
-		 std::cin >> accountNum >> passport;
-		 for(auto& element : clients)
-		 {
-		 	if(element["accountNumber"].get<int>() == accountNum)
-			{
-				std::cout << "Enter amount you will add\n";
-				double amount;
-				std::cin >> amount;
-				double d = element["amount"].get<double>();
-				amount += d;
-				element["amount"] = amount;
-				break;
-			}									
-		 }
-		 start();
-	}
+  	{
+        	std::cout << "Enter your account number and passport seriya please\n";
+        	int accountNum{};
+        	std::string passport{};
+        	std::cin >> accountNum >> passport;
+        	double amount;
+        	for(auto& element : clients)
+        	{
+            		if(element["accountNumber"].get<int>() == accountNum)
+            		{
+                		std::cout << "Enter amount you will add\n";
+                		std::cin >> amount;
+                		double d = element["amount"].get<double>();
+                		amount += d;
+                		element["amount"] = amount;
+                		break;
+            		}
+         	}
+         	std::cout << "\n Now you have " << amount << " on your account\n";
+         	start();
+    	}
 
 
-
-	void BankManagment::createNewAccount()
-	{
-		std::cout << "Enter your name and lastname please\n";
-		std::string fName{};
-		std::string lName{};
-		std::cin >> fName >> lName;
-		std::cout << "Enter your passport seriya\n";
-		std::string passport{};
-		std::cin >> passport;
-		std::cout << "Enter amount that you will keep on this account please\n";
-		double amount{};
-		std::cin >> amount;
-		
-		json client;
-		client["name"] = fName;
-		client["lastName"] = lName;
-		client["passport"] = passport;
-		client["accountNumber"] = accountNum++;
-		client["amount"] = amount;
-		clients.push_back(client);
-		
-		std::cout << "Your account successfully created. Your account number is  " << accountNum - 1 << "\n";
-		start();
-	}
 	
+	void BankManagment::createNewAccount()
+    	{
+        	std::cout << "Enter your name and lastname please\n";
+       		std::string fName{};
+        	std::string lName{};
+        	std::cin >> fName >> lName;
+        	std::cout << "Enter your passport seriya\n";
+        	std::string passport{};
+        	std::cin >> passport;
+        	bool createAccount = true;
+        	for(const auto& element : clients)
+        	{
+            		if(element["passport"].get<std::string>() == passport)
+            		{
+                		std::cout << "\n You already have an account. If you want to create one more enter Yes, else choose another action\n";
+                		std::string answer;
+                		std::cin >> answer;
+                		if(answer == "Yes" || answer == "yes")
+                    			break;
+                		else
+                		{
+                    			createAccount = false;
+                    			start();
+                    			break;
+                		}
+            		}
+        	}
+        	if(createAccount)
+        	{
+            		std::cout << "Enter amount that you will keep on this account please\n";
+            		double amount{};
+            		std::cin >> amount;
+
+            		json client;
+            		client["name"] = fName;
+            		client["lastName"] = lName;
+            		client["passport"] = passport;
+            		client["accountNumber"] = accountNum++;
+            		client["amount"] = amount;
+            		clients.push_back(client);
+
+            		std::cout << "Your account successfully created. Your account number is  " << accountNum - 1 << "\n";
+            		start();
+       		}
+    	}
+
+
 	void BankManagment::removeAccount()
 	{
 		std::cout << "Enter your passport seriya please\n";
@@ -139,16 +157,16 @@
 			if((*it)["passport"].get<std::string>() == passport)
 			{
 				clients.erase(it);
-			}
-			break;
+				break;
+			}			
 		}
 		std::cout << "\nYour account successfully deleted\n";
 		start();
 	}
 
-	bool BankManagment::isValidAccount(const std::string& passport, const int& acNum)
+	bool BankManagment::isValidAccount(const std::string& passport, const int& acNum) const
 	{
-		for(auto& element : clients)
+		for(const auto& element : clients)
 		{
 			if(element["accountNumber"].get<int>() == acNum && element["passport"].get<std::string>() == passport)
 				return true;
@@ -202,7 +220,7 @@
 	void BankManagment::viewCustList()
 	{
 		std::cout << "\nCustomer's list\n";
-		for(auto& element : clients)
+		for(const auto& element : clients)
 		{
 			std::cout << element["name"] << "\t" << element["lastName"] << "\t" << element["accountNumber"] << "\t" << element["amount"] << "\n";
 		}
@@ -214,7 +232,7 @@
 		std::cout << "Enter your passport seriya please\n";
 		std::string passport{};
 		std::cin >> passport;
-		for(auto& element : clients)
+		for(const auto& element : clients)
 		{
 			if(element["passport"].get<std::string>() == passport)
 			{
