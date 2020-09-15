@@ -18,7 +18,7 @@ class BankManagment
   		json clients;  
 		void initializeAccNumber();
 		void createNewAccount();
-		bool isValidAccount(const std::string& passport, const int& acNum);
+		bool isValidAccount(const std::string& passport, const int& acNum) const;
 		void transactions();
 		void viewCustList();
 		void updateInformation();
