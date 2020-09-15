@@ -7,7 +7,7 @@
 
  	BankManagment::BankManagment()
             :clients(json::array()),
-            accountNum(111)
+              accountNum(111)
     	{
         	std::ifstream ifs("Clients.json");
         	if(ifs.is_open())
@@ -97,7 +97,6 @@
          	std::cout << "\n Now you have " << amount << " on your account\n";
          	start();
     	}
-
 
 	
 	void BankManagment::createNewAccount()
