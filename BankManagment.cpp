@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <string>
 #include <fstream>
+#include <exception>
 #include "BankManagment.h"
 
 
@@ -165,10 +166,16 @@
 
 	bool BankManagment::isValidAccount(const std::string& passport, const int& acNum) const
 	{
-		for(const auto& element : clients)
-		{
-			if(element["accountNumber"].get<int>() == acNum && element["passport"].get<std::string>() == passport)
-				return true;
+		try{
+			for(const auto& element : clients)
+			{
+				if(element["accountNumber"].get<int>() == acNum && element["passport"].get<std::string>() == passport)
+					return true;
+				else
+					throw std::logic_error("Error : Invalid account");
+			}
+		} catch (const std::exception& e){
+			std::cout << e.what() << "\n";
 		}
 		return false;
 	}
@@ -211,8 +218,6 @@
 				}
 			}				
 		}
-		else
-			std::cout << "Invalid account\n";
 		start();
 	}
 
